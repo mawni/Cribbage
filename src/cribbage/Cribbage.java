@@ -145,6 +145,7 @@ private void initScore() {
 	 }
   }
 
+//todo not used
 private void updateScore(int player) {
 	removeActor(scoreActors[player]);
 	scoreActors[player] = new TextActor(String.valueOf(scores[player]), Color.WHITE, bgColor, bigFont);
@@ -200,6 +201,10 @@ private void starter(Hand pack) {
 	Card dealt = randomCard(pack);
 	dealt.setVerso(false);
 	transfer(dealt, starter);
+
+	//if starter.getSuit() == Jack
+	// players points =+ StarterRule.getScore();
+	//todo call starter rule immediately?^^
 }
 
 int total(Hand hand) {
@@ -214,6 +219,7 @@ class Segment {
 		int lastPlayer;
 		boolean newSegment;
 
+		//todo call last card rule?
 		void reset(final List<Hand> segments) {
 			segment = new Hand(deck);
 			segment.setView(Cribbage.this, new RowLayout(segmentLocations[segments.size()], segmentWidth));
@@ -264,14 +270,14 @@ private void play() {
 	}
 }
 
+//todo: implement? wot is this
 void showHandsCrib() {
 	// score player 0 (non dealer)
 	// score player 1 (dealer)
 	// score crib (for dealer)
 }
 
-  public Cribbage()
-  {
+  public Cribbage() {
     super(850, 700, 30);
     cribbage = this;
     setTitle("Cribbage (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
