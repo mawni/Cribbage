@@ -17,6 +17,10 @@ import java.util.stream.Stream;
 public class Cribbage extends CardGame {
 	static Cribbage cribbage;  // Provide access to singleton
 
+	public static Cribbage getInstance(){
+		return cribbage;
+	}
+
 	public enum Suit {
 		CLUBS, DIAMONDS, HEARTS, SPADES
 	}
@@ -145,7 +149,6 @@ private void initScore() {
 	 }
   }
 
-//todo not used
 private void updateScore(int player) {
 	removeActor(scoreActors[player]);
 	scoreActors[player] = new TextActor(String.valueOf(scores[player]), Color.WHITE, bgColor, bigFont);
@@ -193,18 +196,19 @@ private void discardToCrib() {
 }
 
 private void starter(Hand pack) {
-	starter = new Hand(deck);  // if starter is a Jack, the dealer gets 2 points
-	RowLayout layout = new RowLayout(starterLocation, 0);
+	starter = new Hand(deck);
+	// if starter is a Jack, the dealer gets 2 points
+	// pseudo code
+	if (starter.getSuit() == Jack) {
+		scores[dealer] += StarterRule.getScore();
+	}
+	RowLayout layout = new RowLayout(starterLocation, 0); 
 	layout.setRotationAngle(0);
 	starter.setView(this, layout);
 	starter.draw();
 	Card dealt = randomCard(pack);
 	dealt.setVerso(false);
 	transfer(dealt, starter);
-
-	//if starter.getSuit() == Jack
-	// players points =+ StarterRule.getScore();
-	//todo call starter rule immediately?^^
 }
 
 int total(Hand hand) {
@@ -219,7 +223,6 @@ class Segment {
 		int lastPlayer;
 		boolean newSegment;
 
-		//todo call last card rule?
 		void reset(final List<Hand> segments) {
 			segment = new Hand(deck);
 			segment.setView(Cribbage.this, new RowLayout(segmentLocations[segments.size()], segmentWidth));
@@ -243,6 +246,9 @@ private void play() {
 			if (s.go) {
 				// Another "go" after previous one with no intervening cards
 				// lastPlayer gets 1 point for a "go"
+				scores[s.lastPlayer] += LastCardRule.getScore();
+				// update score on game
+				updateScore(s.lastPlayer);
 				s.newSegment = true;
 			} else {
 				// currentPlayer says "go"
@@ -254,10 +260,17 @@ private void play() {
 			transfer(nextCard, s.segment);
 			if (total(s.segment) == thirtyone) {
 				// lastPlayer gets 2 points for a 31
+				scores[s.lastPlayer] += ThirtyOnesRule.getScore();
+				// draw the new score for the player
+				updateScore(s.lastPlayer);
 				s.newSegment = true;
 				currentPlayer = (currentPlayer+1) % 2;
 			} else {
-				// if total(segment) == 15, lastPlayer gets 2 points for a 15
+				if (total(s.segment) == 15) {//lastPlayer gets 2 points for a 15
+					scores[s.lastPlayer] += FifteensRule.getScore();
+					// draw the new score for the player
+					updateScore(s.lastPlayer);
+				}
 				if (!s.go) { // if it is "go" then same player gets another turn
 					currentPlayer = (currentPlayer+1) % 2;
 				}
@@ -270,11 +283,20 @@ private void play() {
 	}
 }
 
-//todo: implement? wot is this
+//todo: implement
 void showHandsCrib() {
+	// log the show i.e. to actually show cards
+	// ScoreController.scoreHand(Hand hand, int playerNum);
 	// score player 0 (non dealer)
+	// log of score done within method of prev line
+
+	// log the show
 	// score player 1 (dealer)
+	// log score within prev line method
+
+	// log the show
 	// score crib (for dealer)
+	// log score within prev line method
 }
 
   public Cribbage() {

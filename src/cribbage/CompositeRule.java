@@ -3,20 +3,22 @@ package cribbage;
 import java.util.ArrayList;
 
 public class CompositeRule implements ScoreRule {
-    //todo
-    //create way to get instance and to get the ScoreRule
+    //todo call whenever many rules can be applied in 1 instance (show, crib etc.)
 
-    //store rules to apply
-    private ArrayList rules = new ArrayList<>();
+    //to store rules that apply
+    private ArrayList<ScoreRule> rules = new ArrayList<>();
 
+    Cribbage.getInstance().
 
+    //gets the score of all the applicable rules
     public int getScore() {
         int score = 0;
-        // for each score rule in arraylist, add the required scores to counter
-        //check how the type works
-        for (TYPE rule : rules) {
+
+        //for each score rule in ArrayList, add the required scores to counter
+        for (ScoreRule rule : rules) {
             score += rule.getScore();
-            //remove if need to
+            //remove from Arraylist to clean up
+            rules.remove(rule);
         }
         return score;
     }
