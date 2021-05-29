@@ -17,6 +17,10 @@ import java.util.stream.Stream;
 public class Cribbage extends CardGame {
 	static Cribbage cribbage;  // Provide access to singleton
 
+	public static Cribbage getInstance(){
+		return cribbage;
+	}
+
 	public enum Suit {
 		CLUBS, DIAMONDS, HEARTS, SPADES
 	}
