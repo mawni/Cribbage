@@ -54,57 +54,49 @@ public class Log {
     }
 
     //print out the log lines for when hands are dealt. should be called one time in Cribbage
-    public void dealtHand(ArrayList<Card> p0Hand, ArrayList<Card> p1Hand) throws IOException {
+    public void dealtHand(Hand p0Hand, Hand p1Hand) throws IOException {
         bw.newLine();
         //player 0
-        bw.write("deal,P0,[" + CardShortener.shortenCard(p0Hand.get(0)));
-        for (int i=1; i<p0Hand.size(); i++){
-            bw.write("," + CardShortener.shortenCard(p0Hand.get(i)));
-        }
-        bw.write("]");
+        bw.write("deal,P0," + Cribbage.getInstance().canonical(p0Hand));
         //player 1
         bw.newLine();
-        bw.write("deal,P1,[" + CardShortener.shortenCard(p1Hand.get(0)));
-        for (int i=1; i<p1Hand.size(); i++){
-            bw.write("," + CardShortener.shortenCard(p1Hand.get(i)));
-        }
-        bw.write("]");
+        bw.write("deal,P1," + Cribbage.getInstance().canonical(p1Hand));
     }
 
     // needs to be called once per player
-    public void discarded(int playerNum, ArrayList<Card> discards) throws IOException {
+    public void discarded(int playerNum, Hand discards) throws IOException {
         bw.newLine();
-        bw.write("discard,P" + playerNum + ",[" + CardShortener.shortenCard(discards.get(0)) + "," + CardShortener.shortenCard(discards.get(1)) + "]");
+        bw.write("discard,P" + playerNum + "," + Cribbage.getInstance().canonical(discards));
     }
 
-    //called each time a player plays a card
-    public void played(int playerNum, int roundValue, Card card) throws IOException {
+    /**
+     * played() is called each time a player plays a card during the round
+     * @param playerNum player 0 or player 1 i.e. P0 or P1
+     * @param totalRoundValue this refers to the value on the board i.e. when the players are trying to reach 31
+     * @param card the card the player plays
+     * @throws IOException it's writing to an opened file, hence potential for input/output error
+     */
+    public void played(int playerNum, int totalRoundValue, Card card) throws IOException {
         bw.newLine();
-        bw.write("play,P" + playerNum + "," + roundValue + "," + CardShortener.shortenCard(card));
+        bw.write("play,P" + playerNum + "," + totalRoundValue + "," + Cribbage.getInstance().canonical(card));
     }
 
-    public void scored(int playerNum, int score, int newPoints, String pointType) throws IOException {
+    //this is for during the actual round. the cards aren't logged, only points and point type
+    public void scored(int playerNum, int newScore, int newPoints, String pointType) throws IOException {
         bw.newLine();
-        bw.write("score,P" + playerNum + "," + score + "," + newPoints + "," + pointType);
+        bw.write("score,P" + playerNum + "," + newScore + "," + newPoints + "," + pointType);
     }
 
-    public void cardsShown(int playerNum, Card starterCard, ArrayList<Card> hand) throws IOException{
+    public void cardsShown(int playerNum, Card starterCard, Hand hand) throws IOException{
         bw.newLine();
-        bw.write("show,P" + playerNum + "," + CardShortener.shortenCard(starterCard) + "+[" + CardShortener.shortenCard(hand.get(0)));
-        for (int i=1; i<hand.size(); i++){
-            bw.write("," + CardShortener.shortenCard(hand.get(i)));
-        }
-        bw.write("]");
+        bw.write("show,P" + playerNum + "," + Cribbage.getInstance().canonical(starterCard) + "+" + Cribbage.getInstance().canonical(hand));
     }
 
-    //called once for each player, also called once for the crib
-    public void handScored(int playerNum, int score, int newPoints, String pointType, ArrayList<Card> cards)throws IOException{
+    //Called during the show. more specifically, called each time a player scores from their hand during the show
+    //Also usable for scoring (in start of game) if dealer turns up Jack as starter
+    public void handScored(int playerNum, int newScore, int newPoints, String pointType, Hand scoringCards)throws IOException{
         bw.newLine();
-        bw.write("score,P" + playerNum + "," + score + "," + newPoints + "," + pointType + ",[" + CardShortener.shortenCard(cards.get(0)));
-        for (int i=1; i<cards.size(); i++){
-            bw.write("," + CardShortener.shortenCard(cards.get(i)));
-        }
-        bw.write("]");
+        bw.write("score,P" + playerNum + "," + newScore + "," + newPoints + "," + pointType + "," + Cribbage.getInstance().canonical(scoringCards));
     }
 
     //close the cribbage.log file. this should be called when the game closes
