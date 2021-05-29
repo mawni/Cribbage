@@ -81,6 +81,7 @@ public class Log {
         bw.write("play,P" + playerNum + "," + totalRoundValue + "," + Cribbage.getInstance().canonical(card));
     }
 
+    //this is for during the actual round. the cards aren't logged, only points and point type
     public void scored(int playerNum, int newScore, int newPoints, String pointType) throws IOException {
         bw.newLine();
         bw.write("score,P" + playerNum + "," + newScore + "," + newPoints + "," + pointType);
@@ -91,7 +92,8 @@ public class Log {
         bw.write("show,P" + playerNum + "," + Cribbage.getInstance().canonical(starterCard) + "+" + Cribbage.getInstance().canonical(hand));
     }
 
-    //called once for each player, also called once for the crib
+    //Called during the show. more specifically, called each time a player scores from their hand during the show
+    //Also usable for scoring (in start of game) if dealer turns up Jack as starter
     public void handScored(int playerNum, int newScore, int newPoints, String pointType, Hand scoringCards)throws IOException{
         bw.newLine();
         bw.write("score,P" + playerNum + "," + newScore + "," + newPoints + "," + pointType + "," + Cribbage.getInstance().canonical(scoringCards));
