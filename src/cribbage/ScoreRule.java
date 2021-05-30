@@ -1,5 +1,6 @@
 package cribbage;
 
-public interface ScoreRule {
-    int getScore();
+public abstract class ScoreRule {
+    public abstract int getScore();
+    public abstract boolean checkRule();
 }
