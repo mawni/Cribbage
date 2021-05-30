@@ -2,7 +2,7 @@ package cribbage;
 
 public class RuleFactory {
 
-	//singleton instance referece
+	//singleton instance reference
     private static RuleFactory factory;
 
     public RuleFactory(){};

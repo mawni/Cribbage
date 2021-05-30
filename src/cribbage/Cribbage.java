@@ -155,6 +155,11 @@ private void updateScore(int player) {
 	addActor(scoreActors[player], scoreLocations[player]);
 }
 
+//function to get the current total score for a player
+public int getScore(int playerNum){
+	return scores[playerNum];
+}
+
 private void deal(Hand pack, Hand[] hands) {
 	for (int i = 0; i < nPlayers; i++) {
 		hands[i] = new Hand(deck);

@@ -7,7 +7,7 @@ public class ScoreController {
 
     public ScoreController() {}
 
-    private ArrayList<ScoreRule> scoreList = new ArrayList<>();
+    //private ArrayList<ScoreRule> scoreList = new ArrayList<>();
     //whenever the scoreStrat methods find a score, add it to this array list.
     //will need to be sorted at the end based on some rules mention in the logging
 
@@ -28,14 +28,14 @@ public class ScoreController {
     public void run(Hand hand, int playerNum, int scoreStrat) {
         switch (scoreStrat) { // the start of a round
             case 1: // the start of a round
-                start(hand);
+                start(playerNum, hand);
                 break;
                 //playerNum is needed to eventually log the scores scored
             case 2: // the actual play of a round
-                round(hand);
+                round(playerNum, hand);
                 break;
             case 3: //the show i.e. the end of a round
-                show(hand);
+                show(playerNum, hand);
                 break;
             default: //something not working
                 System.out.println("Error! Invalid score strategy choice");
@@ -46,19 +46,21 @@ public class ScoreController {
     }
 
     // the start of a round
-    public void start(Hand hand) {
+    public void start(int playerNum, Hand hand) {
+        //only relevant rule here is the StarterRule (i.e. if Jack is dealt as starter card)
+        //when ScoreController.run() called in Cribbage, only the starter card will be passed (i.e. hand will be 1 card)
+
         //factory to instantiate all relevant rules for the start
+        ScoreRule starterRule = RuleFactory.getInstance().getRule("starter");
 
-        if (StarterRule.checkRule(hand)) {
-            //use StarterRule.getPoints()
-            //use StarterRule.getCards()
-
-            //do the log function call
+        if (starterRule.checkRule(hand)) { //if a jack is the starter card
+            //int playerNum, int newScore, int newPoints, String pointType, Hand scoringCards
+            Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum)+starterRule.getPoints(), starterRule.getPoints(), "starter", starterRule.getCards());
         }
     }
 
     // the actual play of a round
-    public void round(Hand hand){
+    public void round(int playerNum, Hand hand){
         ArrayList</*some kind of score parent class*/> scoreList = new ArrayList<>();
             //it'll need point type
 
@@ -71,7 +73,7 @@ public class ScoreController {
     }
 
     //the show i.e. the end of a round
-    public void show(Hand hand){
+    public void show(int playerNum, Hand hand){
         ArrayList</*some kind of score parent class*/> scoreList = new ArrayList<>();
             //it'll need point type, cards relevant
 
