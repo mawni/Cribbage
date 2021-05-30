@@ -37,20 +37,13 @@ public class Log {
     }
 
     //the initial logging of a round/game beginning. should be called once.
-    public void roundStart(int seed,boolean isHuman1, boolean isHuman2) throws IOException {
+    public void roundStart(int seed, String player0, String player1) throws IOException {
         bw.write("seed," + seed);
         bw.newLine();
-        if (isHuman1){
-            bw.write("cribbage.HumanPlayer,P0");
-        } else {
-            bw.write("cribbage.RandomPlayer,P0");
-        }
-        bw.newLine();
-        if (isHuman2){
-            bw.write("cribbage.HumanPlayer,P1");
-        } else{
-            bw.write("cribbage.RandomPlayer,P1");
-        }
+        //player 0
+        bw.write(player0 + ",P0");
+        //player 1
+        bw.write(player1 + ",P1");
     }
 
     //print out the log lines for when hands are dealt. should be called one time in Cribbage

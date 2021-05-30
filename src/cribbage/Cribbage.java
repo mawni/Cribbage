@@ -343,7 +343,10 @@ void showHandsCrib() {
 	  players[1] = (IPlayer) clazz.getConstructor().newInstance();
 	  // End properties
 
+	  //log the start of the game setup
+	  Log.getInstance().roundStart(SEED, cribbageProperties.getProperty("Player0"), cribbageProperties.getProperty("Player1"));
 	  new Cribbage();
+	  Log.getInstance().closeFile();
   }
 
 }
