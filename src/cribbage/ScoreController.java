@@ -83,8 +83,6 @@ public class ScoreController {
 
     //the show i.e. the end of a round
     public void show(int playerNum, Hand hand){
-        ArrayList<ScoreRule> scoreList = new ArrayList<ScoreRule>();
-
         //factory to instantiate all relevant rules for the show
         ScoreRule fifteensRule = RuleFactory.getInstance().getRule("fifteen");
         ScoreRule runsRule = RuleFactory.getInstance().getRule("run");
@@ -96,42 +94,40 @@ public class ScoreController {
         // done by calling methods of factory-created score classes
 
         if (fifteensRule.checkRule(hand)){
-
+            //there can be multiple fifteen rule scorings found
+            ArrayList<Hand> scoringFifteens = fifteensRule.getCards();
+            //todo check getCards() method to ensure it returns list sorted in hand order? (alphabetic order of the canonical representation)
+            //todo create custom comparator canonicalSort()
+            for (Hand item : scoringFifteens){
+                //update score
+                Cribbage.getInstance().addScorePoints(playerNum, fifteensRule.getPoints());
+                //do the log
+                //int playerNum, int newScore, int newPoints, String pointType, Hand scoringCards
+                Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), fifteensRule.getPoints(), fifteensRule.getType(), item);
+            }
         }
         if (runsRule.checkRule(hand, /*some vairable to indicate this is the run calculation during play */)){
-
+            //there can be mulitple run rule scorings found
+            //todo checkRule() here should somewhere create an array list of scoring cards sets
+            //todo sort the arrarylist based on order of cards
         }
         if (pairsRule.checkRule(hand, /*some vairable to indicate this is the run calculation during play */)){
-
+            //there can be mulitple pair rule scorings found
+            //todo checkRule() here should somewhere create an array list of scoring cards sets
+            //todo sort the arrarylist based on order of cards
         }
         if (flushRule.checkRule(hand)){
-
+            //there can be mulitple flush rule scorings found
+            //todo checkRule() here should somewhere create an array list of scoring cards sets
+            //todo sort the arrarylist based on order of cards
         }
         if (jackRule.checkRule(hand)){
-
-        }
-
-        //if the card just played on segment in round creates a 'run'
-        if (runsRule.checkRule(hand, /*some vairable to indicate this is the run calculation during play */)) {
-            //note for any given move during the round, only one run can may ever be scored. this is different to during the show
-            //update score in cribbage
-            Cribbage.getInstance().addScorePoints(playerNum, runsRule.getPoints());
+            //there can only be one jack rule scoring found
+            //update score
+            Cribbage.getInstance().addScorePoints(playerNum, jackRule.getPoints());
             //do the log
-            Log.getInstance().scored(playerNum, Cribbage.getInstance().getScore(playerNum), runsRule.getPoints(), runsRule.getType());
+            //int playerNum, int newScore, int newPoints, String pointType, Hand scoringCards
+            Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), jackRule.getPoints(), jackRule.getType(), jackRule.getCards());
         }
-
-        //if the card just played on segment in round creates a pair
-        if (pairsRule.checkRule(hand, /*some vairable to indicate this is the run calculation during play */)) {
-            //note for any given move during the round, only one pair can may ever be scored based on recently played cards (in order)
-            //update score in cribbage
-            Cribbage.getInstance().addScorePoints(playerNum, pairsRule.getPoints());
-            //do the log
-            Log.getInstance().scored(playerNum, Cribbage.getInstance().getScore(playerNum), pairsRule.getPoints(), pairsRule.getType());
-        }
-
     }
-
-
-    // take n all
-
 }
