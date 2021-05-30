@@ -159,6 +159,11 @@ private void updateScore(int player) {
 public int getScore(int playerNum){
 	return scores[playerNum];
 }
+//function to update the player score
+public void addScorePoints(int playerNum, int newPoints){
+	scores[playerNum]+=newPoints;
+	updateScore(playerNum); //update the score visualiser on screen
+}
 
 private void deal(Hand pack, Hand[] hands) {
 	for (int i = 0; i < nPlayers; i++) {
