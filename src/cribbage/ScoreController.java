@@ -41,8 +41,6 @@ public class ScoreController {
                 System.out.println("Error! Invalid score strategy choice");
                 break;
         }
-        //sort the array list?
-        //call the log methods(?) maybe this is done within the start/round/show methods, not sure yet
     }
 
     // the start of a round
@@ -53,7 +51,8 @@ public class ScoreController {
         //factory to instantiate all relevant rules for the start
         ScoreRule starterRule = RuleFactory.getInstance().getRule("starter");
 
-        if (starterRule.checkRule(hand)) { //if a jack is the starter card
+        //if a jack is the starter card
+        if (starterRule.checkRule(hand)) {
             //int playerNum, int newScore, int newPoints, String pointType, Hand scoringCards
             Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum)+starterRule.getPoints(), starterRule.getPoints(), "starter", starterRule.getCards());
         }

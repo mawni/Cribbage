@@ -26,8 +26,6 @@ public class RuleFactory {
 		//actual creation of rule classes
 		if (ruleType.equalsIgnoreCase("fifteen")) {
 			return new FifteensRule();
-		} else if (ruleType.equalsIgnoreCase("thirtyone")) {
-			return new ThirtyOnesRule();
 		} else if (ruleType.equalsIgnoreCase("flush")) {
 			return new FlushRule();
 		} else if (ruleType.equalsIgnoreCase("jack")) {
@@ -50,7 +48,6 @@ public class RuleFactory {
 
 	/* List of the rules we have
 	FifteensRule.java
-	ThirtyOnesRule.java
 	FlushRule.java
 	JackRule.java
 	LastCardRule.java
