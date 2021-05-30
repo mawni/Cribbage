@@ -39,10 +39,11 @@ public class Log {
     //the initial logging of a round/game beginning. should be called once.
     public void roundStart(int seed, String player0, String player1) throws IOException {
         bw.write("seed," + seed);
-        bw.newLine();
         //player 0
+        bw.newLine();
         bw.write(player0 + ",P0");
         //player 1
+        bw.newLine();
         bw.write(player1 + ",P1");
     }
 
@@ -66,6 +67,7 @@ public class Log {
      * played() is called each time a player plays a card during the round
      * @param playerNum player 0 or player 1 i.e. P0 or P1
      * @param totalRoundValue this refers to the value on the board i.e. when the players are trying to reach 31
+     *                        More specifically, this refers to the value of the segment of the round
      * @param card the card the player plays
      * @throws IOException it's writing to an opened file, hence potential for input/output error
      */

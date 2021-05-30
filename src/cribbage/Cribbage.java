@@ -241,6 +241,15 @@ private void play() {
 			if (s.go) {
 				// Another "go" after previous one with no intervening cards
 				// lastPlayer gets 1 point for a "go"
+				scores[s.lastPlayer]+=1;
+				//todo use of '1' here should be replaced with a call of LastRule.java's final int.
+				try {
+					Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 1, "go");
+					//todo use of '1' and "go" should be replaced with a call of LastRule.java's final int and string
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("'Go' score logging failed");
+				}
 				s.newSegment = true;
 			} else {
 				// currentPlayer says "go"
