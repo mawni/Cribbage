@@ -196,8 +196,13 @@ private void discardToCrib() {
 }
 
 private void starter(Hand pack) {
-	starter = new Hand(deck);  // if starter is a Jack, the dealer gets 2 points
-	RowLayout layout = new RowLayout(starterLocation, 0);
+	starter = new Hand(deck);
+	// if starter is a Jack, the dealer gets 2 points
+	// pseudo code
+	if (starter.getSuit() == Jack) {
+		scores[dealer] += StarterRule.getScore();
+	}
+	RowLayout layout = new RowLayout(starterLocation, 0); 
 	layout.setRotationAngle(0);
 	starter.setView(this, layout);
 	starter.draw();
@@ -241,6 +246,9 @@ private void play() {
 			if (s.go) {
 				// Another "go" after previous one with no intervening cards
 				// lastPlayer gets 1 point for a "go"
+				scores[s.lastPlayer] += LastCardRule.getScore();
+				// update score on game
+				updateScore(s.lastPlayer);
 				s.newSegment = true;
 			} else {
 				// currentPlayer says "go"
@@ -252,10 +260,17 @@ private void play() {
 			transfer(nextCard, s.segment);
 			if (total(s.segment) == thirtyone) {
 				// lastPlayer gets 2 points for a 31
+				scores[s.lastPlayer] += ThirtyOnesRule.getScore();
+				// draw the new score for the player
+				updateScore(s.lastPlayer);
 				s.newSegment = true;
 				currentPlayer = (currentPlayer+1) % 2;
 			} else {
-				// if total(segment) == 15, lastPlayer gets 2 points for a 15
+				if (total(s.segment) == 15) {//lastPlayer gets 2 points for a 15
+					scores[s.lastPlayer] += FifteensRule.getScore();
+					// draw the new score for the player
+					updateScore(s.lastPlayer);
+				}
 				if (!s.go) { // if it is "go" then same player gets another turn
 					currentPlayer = (currentPlayer+1) % 2;
 				}
@@ -268,14 +283,23 @@ private void play() {
 	}
 }
 
+//todo: implement
 void showHandsCrib() {
+	// log the show i.e. to actually show cards
+	// ScoreController.scoreHand(Hand hand, int playerNum);
 	// score player 0 (non dealer)
+	// log of score done within method of prev line
+
+	// log the show
 	// score player 1 (dealer)
+	// log score within prev line method
+
+	// log the show
 	// score crib (for dealer)
+	// log score within prev line method
 }
 
-  public Cribbage()
-  {
+  public Cribbage() {
     super(850, 700, 30);
     cribbage = this;
     setTitle("Cribbage (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
