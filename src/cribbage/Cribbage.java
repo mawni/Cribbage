@@ -230,6 +230,7 @@ class Segment {
 
 private void play() {
 	final int thirtyone = 31;
+	final int fifteen = 15;
 	List<Hand> segments = new ArrayList<>();
 	int currentPlayer = 0; // Player 1 is dealer
 	Segment s = new Segment();
@@ -250,6 +251,7 @@ private void play() {
 					e.printStackTrace();
 					System.out.println("'Go' score logging failed");
 				}
+				updateScore(s.lastPlayer); //update score display on screen
 				s.newSegment = true;
 			} else {
 				// currentPlayer says "go"
@@ -261,10 +263,33 @@ private void play() {
 			transfer(nextCard, s.segment);
 			if (total(s.segment) == thirtyone) {
 				// lastPlayer gets 2 points for a 31
+				scores[s.lastPlayer]+=2;
+				//todo use of '2' here should be replaced with a call of a final int from a ScoreRule.java subclass.
+				try {
+					Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 2, "thirtyone");
+					//todo use of '2' and "thirtyone" should be replaced with a call of final int and string from a ScoreRule.java subclass
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("'Thirty One' score logging failed");
+				}
+				updateScore(s.lastPlayer); //update score display on screen
 				s.newSegment = true;
 				currentPlayer = (currentPlayer+1) % 2;
 			} else {
 				// if total(segment) == 15, lastPlayer gets 2 points for a 15
+				if (total(s.segment) == fifteen) {
+					scores[s.lastPlayer]+=2;
+					//todo use of '2' here should be replaced with a call of a final int from a ScoreRule.java subclass.
+					try {
+						Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 2, "fifteen");
+						//todo use of '2' and "fifteen" should be replaced with a call of final int and string from a ScoreRule.java subclass
+					} catch (IOException e) {
+						e.printStackTrace();
+						System.out.println("'Fifteen' score logging failed");
+					}
+					updateScore(s.lastPlayer); //update score display on screen
+				}
+
 				if (!s.go) { // if it is "go" then same player gets another turn
 					currentPlayer = (currentPlayer+1) % 2;
 				}
