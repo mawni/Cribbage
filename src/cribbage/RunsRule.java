@@ -7,24 +7,12 @@ import java.util.Arrays;
 public class RunsRule extends ScoreRule {
     //todo: implement runs scoring
     // note different logic during show and play
-    // the Play: can be run of 3, 4, 5, 6, 7
     // the Show: can be run of 3, 4, 5, and include starter card
-    // runs in the Play would need to be check every time a card is played
-    // needs to reset every segment?
 
     public static final String TYPE = "run";
 
     public RunsRule() {
         setType(TYPE);
-    }
-
-    @Override
-    public int getPoints() {
-        int score = 0;
-        // for each incrementing/types of runs score++
-        // use conditional to check what kind of run, perhaps using getRun() method
-        // then set score based on run type
-        return score;
     }
 
     // method to check what kind of run potentially eg getRun()
@@ -86,6 +74,7 @@ public class RunsRule extends ScoreRule {
         // check what kind of run it is, score is based on run length
         // create new method to check the kind of run?
         // return true if there is a sequence
+        //todo implement this
     }
 
     //this takes in an array of hands, and checks if any item in the array contains a card

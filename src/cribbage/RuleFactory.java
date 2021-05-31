@@ -50,7 +50,6 @@ public class RuleFactory {
 	PairsRule.java
 	RunsRule.java
 	StarterRule.java
-	TotalsRule.java
 	 */
 
 }
