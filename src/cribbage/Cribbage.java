@@ -190,6 +190,9 @@ private void deal(Hand pack, Hand[] hands) {
 	layouts[0].setStepDelay(0);
 }
 
+//function to create a new empty hand
+public Hand makeHand(){return new Hand(deck);}
+
 private void discardToCrib() {
 	crib = new Hand(deck);
 	RowLayout layout = new RowLayout(cribLocation, cribWidth);
@@ -216,7 +219,7 @@ private void starter(Hand pack) {
 	transfer(dealt, starter);
 }
 
-int total(Hand hand) {
+public static int total(Hand hand) {
 	int total = 0;
 	for (Card c: hand.getCardList()) total += cardValue(c);
 	return total;
