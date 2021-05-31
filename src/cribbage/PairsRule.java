@@ -92,6 +92,7 @@ public class PairsRule extends ScoreRule {
         return -1;
         //returns -1 if nothing found
     }
+    
     public boolean checkPairX(Hand hand, int pairLength, Card lastPlayed){
         //pair length can be 2-4 i.e. pair, triple, quadruple
         Hand[] arrPair = hand.extractSequences(pairLength);

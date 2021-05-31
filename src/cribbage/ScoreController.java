@@ -99,8 +99,7 @@ public class ScoreController {
 
         if (fifteensRule.checkRule(hand)){
             //there can be multiple fifteen rule scorings found. but type is always 'fifteen'
-            ArrayList<Hand> scoringFifteens = fifteensRule.getCards();
-            //todo check getCards() method to ensure it returns list sorted in hand order? (alphabetic order of the canonical representation)
+            ArrayList<Hand> scoringFifteens = fifteensRule.getList();
             for (Hand item : scoringFifteens){
                 //update score
                 Cribbage.getInstance().addScorePoints(playerNum, fifteensRule.getPoints());

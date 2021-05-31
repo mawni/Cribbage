@@ -26,12 +26,20 @@ public class FlushRule extends ScoreRule {
     // i.e. returns flush4 or flush5
 
 
-    public boolean checkRule(Hand hand) {
+    public boolean checkRule(Hand starterHand) {
+        boolean result;
+        int flushLength;
+        starterHand.getNumberOfCardsWithSuit(SPADES);
+        starterHand.getNumberOfCardsWithSuit(DIAMONDS);
+        starterHand.getNumberOfCardsWithSuit(HEARTS);
+        starterHand.getNumberOfCardsWithSuit(CLUBS);
+    
+    }
+        
         // create an arraylist of suits in the hand?
         // alternatively check size of suits in hand
         // could use method getNumberOfCardsWithSuit() from Hand.class potentially
         // if size is 4 or 5, return true
         // perhaps check the size in a different method
 
-    }
 }

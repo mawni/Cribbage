@@ -57,7 +57,7 @@ public class RunsRule extends ScoreRule {
             //if run 5 found
             return true;
         } else if (checkRunX(hand, 4, lastPlayed)){
-            //if run 4 found
+            //if run 4 found 
             return true;
         } else {
             return checkRunX(hand, 3, lastPlayed);

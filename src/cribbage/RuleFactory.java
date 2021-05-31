@@ -46,7 +46,6 @@ public class RuleFactory {
 	FifteensRule.java
 	FlushRule.java
 	JackRule.java
-	LastCardRule.java
 	PairsRule.java
 	RunsRule.java
 	StarterRule.java
