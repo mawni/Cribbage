@@ -24,17 +24,17 @@ public class RuleFactory {
 		}
 
 		//actual creation of rule classes
-		if (ruleType.equalsIgnoreCase("fifteen")) {
+		if (ruleType.equalsIgnoreCase(FifteensRule.TYPE)) {
 			return new FifteensRule();
-		} else if (ruleType.equalsIgnoreCase("flush")) {
+		} else if (ruleType.equalsIgnoreCase(FlushRule.TYPE)) {
 			return new FlushRule();
-		} else if (ruleType.equalsIgnoreCase("jack")) {
+		} else if (ruleType.equalsIgnoreCase(JackRule.TYPE)) {
 			return new JackRule();
-		} else if (ruleType.equalsIgnoreCase("pair")) {
+		} else if (ruleType.equalsIgnoreCase(PairsRule.TYPE)) {
 			return new PairsRule();
-		} else if (ruleType.equalsIgnoreCase("run")) {
+		} else if (ruleType.equalsIgnoreCase(RunsRule.TYPE)) {
 			return new RunsRule();
-		} else if (ruleType.equalsIgnoreCase("starter")) {
+		} else if (ruleType.equalsIgnoreCase(StarterRule.TYPE)) {
 			return new StarterRule();
 		} else {
 			System.out.println("Invalid ruleType provided");

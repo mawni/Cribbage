@@ -3,11 +3,14 @@ package cribbage;
 import ch.aplu.jcardgame.*;
 
 public class FlushRule extends ScoreRule {
+    public static final String TYPE = "flush";
     //todo: scoring - all four cards in the hand are of the same suit (flush4) earns 4 points
     // additional point if the starter card is also of that suit (flush5)
     // note this is only checked in the Show
 
-    public FlushRule() {}
+    public FlushRule() {
+        setType(TYPE);
+    }
 
     public int getScore() {
         int score = 0;

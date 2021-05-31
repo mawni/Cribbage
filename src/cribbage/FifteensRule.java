@@ -1,8 +1,15 @@
 package cribbage;
 
-public class FifteensRule extends ScoreRule {
+import ch.aplu.jcardgame.Card;
+import ch.aplu.jcardgame.Hand;
 
-    public FifteensRule() {}
+public class FifteensRule extends ScoreRule {
+    public static final String TYPE = "fifteen";
+
+    public FifteensRule(){
+        setPoints(2);
+        setType(TYPE);
+    }
 
     //todo parse in the hand
     public int getScore() {
@@ -11,6 +18,7 @@ public class FifteensRule extends ScoreRule {
         return score;
     }
     
+    @Override
     public boolean checkRule(Hand hand) {
         return false;
     }
