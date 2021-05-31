@@ -1,5 +1,6 @@
 package cribbage;
 
+import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 
 import java.util.ArrayList;
@@ -13,7 +14,8 @@ public abstract class ScoreRule {
     public abstract boolean checkRule(Hand hand); //subclasses must implement this
     public boolean checkRule(Hand hand, String playOrShow){ //classes may override this if needed
         return false;
-    };
+    }
+    public boolean checkRule(Hand hand, Card starterCard){return false;} //classes may override this if needed
 
     //getters
     public int getPoints(){return points;}

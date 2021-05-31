@@ -35,7 +35,8 @@ public class ScoreController {
                 break;
                 //playerNum is needed to eventually log the scores scored
             case strategyPlay: // the actual play of a round
-                play(playerNum, hand, starterCard);
+                //if strategy is for play of game, the method parameter starterCard isn't necessary
+                play(playerNum, hand);
                 break;
             case strategyShow: //the show i.e. the end of a round
                 show(playerNum, hand, starterCard);
@@ -64,7 +65,7 @@ public class ScoreController {
     }
 
     // the actual play of a round
-    public void play(int playerNum, Hand hand, Card starterCard) throws IOException {
+    public void play(int playerNum, Hand hand) throws IOException {
         //relevant rules here: RunsRule and PairsRule. Hand passed in will be the segment of cards currently on board
 
         //factory to instantiate all relevant rules for the round
@@ -99,10 +100,17 @@ public class ScoreController {
         ScoreRule flushRule = RuleFactory.getInstance().getRule(FlushRule.TYPE);
         ScoreRule jackRule = RuleFactory.getInstance().getRule(JackRule.TYPE);
 
+        //joining up hand and starterCard
+        Hand handWithStarter = Cribbage.getInstance().makeHand();
+        for (Card card : hand.getCardList()){
+            handWithStarter.insert(card, false);
+        }
+        handWithStarter.insert(starterCard, false);
+
         //logic to check which scores are relevant. add to arraylist of scores.
         // done by calling methods of factory-created score classes
 
-        if (fifteensRule.checkRule(hand)){
+        if (fifteensRule.checkRule(handWithStarter)){
             //there can be multiple fifteen rule scorings found. but type is always 'fifteen'
             ArrayList<Hand> scoringFifteens = fifteensRule.getList();
             for (Hand item : scoringFifteens){
@@ -112,14 +120,14 @@ public class ScoreController {
                 Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), fifteensRule.getPoints(), fifteensRule.getType(), item);
             }
         }
-        if (runsRule.checkRule(hand, strategyShow)){
+        if (runsRule.checkRule(handWithStarter, strategyShow)){
             //there can only ever be one run: either run3,4,5 because a hand (inc. starter card) only has 5 cards
             //update score in cribbage
             Cribbage.getInstance().addScorePoints(playerNum, runsRule.getPoints());
             //do the log
             Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), runsRule.getPoints(), runsRule.getType(), runsRule.getCards());
         }
-        if (pairsRule.checkRule(hand, strategyShow)){
+        if (pairsRule.checkRule(handWithStarter, strategyShow)){
             //there can be multiple pair rule scorings found in a hand
             ArrayList<Hand> scoringPairs = pairsRule.getList();
             for (Hand item : scoringPairs){
@@ -132,13 +140,12 @@ public class ScoreController {
                 //pass in number of cards to get the specific number of points and type for pair2,pair3,pair4
             }
         }
-        if (flushRule.checkRule(hand)){
+        if (flushRule.checkRule(hand, starterCard)){
             //there can only be one flush rule scoring found e.g. either all 4 cards in hand same suit OR 4 hand cards + starter card same suit
             //update score
-            Cribbage.getInstance().addScorePoints(playerNum, flushRule.getPoints()); //todo check that flush changes it's points attribute if flush is flush of 4 vs flush of 5
+            Cribbage.getInstance().addScorePoints(playerNum, flushRule.getPoints());
             //do the log
-            Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), flushRule.getPoints(), flushRule.getType(), item);
-            //todo verify that flushRule changes its string attribute 'type' based on whether it's a flush4 of flush5
+            Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), flushRule.getPoints(), flushRule.getType(), flushRule.getCards());
         }
         if (jackRule.checkRule(hand)){
             //there can only be one jack rule scoring found

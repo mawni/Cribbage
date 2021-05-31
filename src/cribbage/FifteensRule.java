@@ -20,7 +20,7 @@ public class FifteensRule extends ScoreRule {
     public boolean checkRule(Hand hand) {
         // 1. GET ALL SUBSETS
         //only way to do this is check all possible combinations of cards, then adding up value
-        ArrayList<Hand> allSubsets = new ArrayList<Hand>();
+        ArrayList<Hand> allSubsets = new ArrayList<>();
         int length = hand.getNumberOfCards();
             //length should always = 5 since fifteens rule is only relevant during the show
         //add all 32 subsets to arraylist. uses a bit-based solution to get all combinations
