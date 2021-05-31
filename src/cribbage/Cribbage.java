@@ -339,6 +339,12 @@ void showHandsCrib() {
 
 	  /* Play the round */
 	  deal(pack, hands);
+	  try {
+		  Log.getInstance().dealtHand(hands[0], hands[1]);
+	  } catch (IOException e) {
+	  	  System.out.println("Logging for dealing failed");
+	  	  e.printStackTrace();
+	  }
 	  discardToCrib();
 	  starter(pack);
 	  play();

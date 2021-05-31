@@ -12,19 +12,8 @@ public class ScoreController {
 
     public ScoreController() {}
 
-    /*each score rule class can be based on an abstract class
-    public abstract class ScoreRule {
-        private int points; //declared within constructor of subclass or in-line, says how much points whatever rule provides
-        private Hand cards; //initialised to null. used to return cards relevant for score if score is detected
-
-        public abstract boolean checkRule(Hand hand){}; //subclass logic to check if rule is detected
-        public int getPoints(){};
-        public Hand getCards(){};
-    }
-    */
-
     //eventually strategy pattern vibes might be useful for changing of 'choice' / strategy
-    public void run(Hand hand, int playerNum, String choice, Card starterCard) throws IOException {
+    public static void run(Hand hand, int playerNum, String choice, Card starterCard) throws IOException {
         switch (choice) {
             case strategyStart: // the start of a round
                 //if strategy is for start of game, the method parameter 'hand' be null. Only starterCard is needed
@@ -48,7 +37,7 @@ public class ScoreController {
     }
 
     // the start of a round
-    public void start(int playerNum, Hand hand) throws IOException {
+    public static void start(int playerNum, Hand hand) throws IOException {
         //only relevant rule here is the StarterRule (i.e. if Jack is dealt as starter card)
         //when ScoreController.run() called in Cribbage, only the starter card will be passed (i.e. hand will be 1 card)
 
@@ -65,7 +54,7 @@ public class ScoreController {
     }
 
     // the actual play of a round
-    public void play(int playerNum, Hand hand) throws IOException {
+    public static void play(int playerNum, Hand hand) throws IOException {
         //relevant rules here: RunsRule and PairsRule. Hand passed in will be the segment of cards currently on board
 
         //factory to instantiate all relevant rules for the round
@@ -92,7 +81,7 @@ public class ScoreController {
     }
 
     //the show i.e. the end of a round
-    public void show(int playerNum, Hand hand, Card starterCard) throws IOException {
+    public static void show(int playerNum, Hand hand, Card starterCard) throws IOException {
         //factory to instantiate all relevant rules for the show
         ScoreRule fifteensRule = RuleFactory.getInstance().getRule(FifteensRule.TYPE);
         ScoreRule runsRule = RuleFactory.getInstance().getRule(RunsRule.TYPE);
