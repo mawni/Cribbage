@@ -296,6 +296,12 @@ private void play() {
 		} else {
 			s.lastPlayer = currentPlayer; // last Player to play a card in this segment
 			transfer(nextCard, s.segment);
+			try {
+				Log.getInstance().played(currentPlayer, total(s.segment), nextCard);
+			} catch (IOException e) {
+				System.out.println("Log for played card failed");
+				e.printStackTrace();
+			}
 			if (total(s.segment) == thirtyone) {
 				// lastPlayer gets 2 points for a 31
 				scores[s.lastPlayer]+=2;
