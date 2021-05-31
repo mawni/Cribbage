@@ -101,7 +101,6 @@ public class ScoreController {
                 //update score
                 Cribbage.getInstance().addScorePoints(playerNum, fifteensRule.getPoints());
                 //do the log
-                //int playerNum, int newScore, int newPoints, String pointType, Hand scoringCards
                 Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), fifteensRule.getPoints(), fifteensRule.getType(), item);
             }
         }
@@ -109,17 +108,35 @@ public class ScoreController {
             //there can be mulitple run rule scorings found of different type run3,run4,run5
             //todo checkRule() here should somewhere create an array list of scoring cards sets
             ArrayList<Hand> scoringRuns = runsRule.getCards();
-
+            for (Hand item : scoringRuns){
+                //update score
+                Cribbage.getInstance().addScorePoints(playerNum, runsRule.getPoints(item.getNumberOfCards()));
+                //pass in number of cards to get the specific number of points for run3,run4,run5
+                //do the log
+                Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), runsRule.getPoints(item.getNumberOfCards()), runsRule.getType(item.getNumberOfCards()), item);
+                //pass in number of cards to get the specific number of points for run3,run4,run5
+            }
         }
         if (pairsRule.checkRule(hand, /*some vairable to indicate this is the run calculation during play */)){
             //there can be mulitple pair rule scorings found
             //todo checkRule() here should somewhere create an array list of scoring cards sets
-
+            ArrayList<Hand> scoringpairs = pairsRule.getCards();
+            for (Hand item : scoringPairs){
+                //update score
+                Cribbage.getInstance().addScorePoints(playerNum, pairsRule.getPoints(item.getNumberOfCards()));
+                //pass in number of cards to get the specific number of points for run3,run4,run5
+                //do the log
+                Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), pairsRule.getPoints(item.getNumberOfCards()), pairsRule.getType(item.getNumberOfCards()), item);
+                //pass in number of cards to get the specific number of points for run3,run4,run5
+            }
         }
         if (flushRule.checkRule(hand)){
-            //there can be mulitple flush rule scorings found
-            //todo checkRule() here should somewhere create an array list of scoring cards sets
-
+            //there can only be one flush rule scoring found e.g. either all 4 cards in hand same suit OR 4 hand cards + starter card same suit
+            //update score
+            Cribbage.getInstance().addScorePoints(playerNum, flushRule.getPoints()); //todo check that flush changes it's points attribute if flush is flush of 4 vs flush of 5
+            //do the log
+            Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), flushRule.getPoints(), flushRule.getType(), item);
+            //todo verify that flushRule changes its string attribute 'type' based on whether it's a flush4 of flush5
         }
         if (jackRule.checkRule(hand)){
             //there can only be one jack rule scoring found
