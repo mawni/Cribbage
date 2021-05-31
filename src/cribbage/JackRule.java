@@ -12,6 +12,7 @@ public class JackRule extends ScoreRule {
     }
    
     public boolean checkRule(Hand hand) {
+        System.out.println("This version of checkRule is not supposed to be called for JackRule!");
         return false;
     }
 

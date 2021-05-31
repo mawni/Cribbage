@@ -147,12 +147,11 @@ public class ScoreController {
             //do the log
             Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), flushRule.getPoints(), flushRule.getType(), flushRule.getCards());
         }
-        if (jackRule.checkRule(hand)){
+        if (jackRule.checkRule(hand, starterCard)){
             //there can only be one jack rule scoring found
             //update score
             Cribbage.getInstance().addScorePoints(playerNum, jackRule.getPoints());
             //do the log
-            //int playerNum, int newScore, int newPoints, String pointType, Hand scoringCards
             Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), jackRule.getPoints(), jackRule.getType(), jackRule.getCards());
         }
     }
