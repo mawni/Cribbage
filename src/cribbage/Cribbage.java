@@ -155,6 +155,16 @@ private void updateScore(int player) {
 	addActor(scoreActors[player], scoreLocations[player]);
 }
 
+//function to get the current total score for a player
+public int getScore(int playerNum){
+	return scores[playerNum];
+}
+//function to update the player score
+public void addScorePoints(int playerNum, int newPoints){
+	scores[playerNum]+=newPoints;
+	updateScore(playerNum); //update the score visualiser on screen
+}
+
 private void deal(Hand pack, Hand[] hands) {
 	for (int i = 0; i < nPlayers; i++) {
 		hands[i] = new Hand(deck);
@@ -230,6 +240,7 @@ class Segment {
 
 private void play() {
 	final int thirtyone = 31;
+	final int fifteen = 15;
 	List<Hand> segments = new ArrayList<>();
 	int currentPlayer = 0; // Player 1 is dealer
 	Segment s = new Segment();
@@ -241,6 +252,16 @@ private void play() {
 			if (s.go) {
 				// Another "go" after previous one with no intervening cards
 				// lastPlayer gets 1 point for a "go"
+				scores[s.lastPlayer]+=1;
+				//todo use of '1' here should be replaced with a call of LastRule.java's final int.
+				try {
+					Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 1, "go");
+					//todo use of '1' and "go" should be replaced with a call of LastRule.java's final int and string
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("'Go' score logging failed");
+				}
+				updateScore(s.lastPlayer); //update score display on screen
 				s.newSegment = true;
 			} else {
 				// currentPlayer says "go"
@@ -252,10 +273,33 @@ private void play() {
 			transfer(nextCard, s.segment);
 			if (total(s.segment) == thirtyone) {
 				// lastPlayer gets 2 points for a 31
+				scores[s.lastPlayer]+=2;
+				//todo use of '2' here should be replaced with a call of a final int from a ScoreRule.java subclass.
+				try {
+					Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 2, "thirtyone");
+					//todo use of '2' and "thirtyone" should be replaced with a call of final int and string from a ScoreRule.java subclass
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("'Thirty One' score logging failed");
+				}
+				updateScore(s.lastPlayer); //update score display on screen
 				s.newSegment = true;
 				currentPlayer = (currentPlayer+1) % 2;
 			} else {
 				// if total(segment) == 15, lastPlayer gets 2 points for a 15
+				if (total(s.segment) == fifteen) {
+					scores[s.lastPlayer]+=2;
+					//todo use of '2' here should be replaced with a call of a final int from a ScoreRule.java subclass.
+					try {
+						Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 2, "fifteen");
+						//todo use of '2' and "fifteen" should be replaced with a call of final int and string from a ScoreRule.java subclass
+					} catch (IOException e) {
+						e.printStackTrace();
+						System.out.println("'Fifteen' score logging failed");
+					}
+					updateScore(s.lastPlayer); //update score display on screen
+				}
+
 				if (!s.go) { // if it is "go" then same player gets another turn
 					currentPlayer = (currentPlayer+1) % 2;
 				}
@@ -343,7 +387,10 @@ void showHandsCrib() {
 	  players[1] = (IPlayer) clazz.getConstructor().newInstance();
 	  // End properties
 
+	  //log the start of the game setup
+	  Log.getInstance().roundStart(SEED, cribbageProperties.getProperty("Player0"), cribbageProperties.getProperty("Player1"));
 	  new Cribbage();
+	  Log.getInstance().closeFile();
   }
 
 }
