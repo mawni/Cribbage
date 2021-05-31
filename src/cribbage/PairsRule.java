@@ -2,6 +2,9 @@ package cribbage;
 
 import ch.aplu.jcardgame.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 //todo: implement pairs rule
 // can have pair2, pair3, pair4
 // note that pair logic is different for show vs play
@@ -10,17 +13,11 @@ import ch.aplu.jcardgame.*;
 
 public class PairsRule extends ScoreRule {
     public static final String TYPE = "pair";
+    private ArrayList<Hand> scoringCardsTemp = new ArrayList<Hand>();
+        //will be used to store each card combination in current hand that satisfies a pair2,3,4 rule
 
     public PairsRule() {
         setType(TYPE);
-    }
-
-    @Override
-    public int getPoints() {
-        int score = 0;
-        //check the pairs somewhere
-        // if using a checkPairs method, conditional can check this to set score accordingly
-        return score;
     }
 
     @Override
@@ -47,9 +44,6 @@ public class PairsRule extends ScoreRule {
         return result;
     }
 
-    // potential method: checkPairs()
-    // use this to check what kind of pairs are in hand
-    // return pair type
 
     // for the Play: pairs must be sequential
     public boolean checkPairPlay(Hand hand) {
@@ -68,16 +62,28 @@ public class PairsRule extends ScoreRule {
         }
     }
 
-    // for the Show: pairs do not have to be sequential, include starter card hand
+    // for the Show: pairs do not have to be sequential during the show. can have multiple
     public boolean checkPairShow(Hand starterHand) {
-        //todo implement
-        //use the methods in Hand that can check the pairings
-        // methods - getPairs(), getTrips(), getQuads()
-        // potentially use another method to check what kind of pair? eg checkPairs
-        return true;
+        // hand includes starter card --> total size = 5
+
+        /* DISCLAIMER
+            Currently I am not accounting for the potential overlap with pairs.
+            For example if a hand has three unique 2's, this algorithm will basically return three pairs and one triple.
+            //todo something to consider in the future.
+         */
+
+        boolean resultTracker = false;
+
+        boolean gotQuads = checkPairX(starterHand, 4);
+        boolean gotTriples = checkPairX(starterHand, 3);
+        boolean gotPairs = checkPairX(starterHand, 2);
+        if (gotQuads || gotTriples || gotPairs){ //if either method found anything, then continue
+            resultTracker = true;
+            scoringCardsTemp.sort(new CanonicalComparator());
+            setList(scoringCardsTemp); //sends to the ScoreRule superclass variable
+        }
+        return resultTracker;
     }
-
-
 
     //this takes in an array of hands, and checks if any item in the array contains a card
     //returns the index of the hand in the hands array that has the card
@@ -92,28 +98,61 @@ public class PairsRule extends ScoreRule {
         return -1;
         //returns -1 if nothing found
     }
-    
+
     public boolean checkPairX(Hand hand, int pairLength, Card lastPlayed){
         //pair length can be 2-4 i.e. pair, triple, quadruple
-        Hand[] arrPair = hand.extractSequences(pairLength);
+        Hand[] arrPair;
+        switch (pairLength){
+            case 4:
+                arrPair = hand.extractQuads();
+                break;
+            case 3:
+                arrPair = hand.extractTrips();
+                break;
+            default: //default is pairs i.e. pairLength = 2
+                arrPair = hand.extractPairs();
+        }
         if (arrPair.length != 0){ //if at least one X-card pair was found
             int handWithCard = checkContainsCard(arrPair, lastPlayed);
             if (handWithCard != -1){
-                switch (pairLength){
-                    case 2: //pair
-                        setPoints(pairLength); //2 points for a pair
-                        break;
-                    case 3: //triple
-                        setPoints(pairLength*2); //6 points for a triple
-                        break;
-                    case 4: //quadruple
-                        setPoints(pairLength*3); //12 points for a quadruple
-                        break;
-                }
+                setPoints(pointsForXPair(pairLength)); //this determines the points based on the size of the pair
                 setCards(arrPair[handWithCard]);
-                setType(TYPE+pairLength);
+                setType(typeForXPair(pairLength));
                 return true;
             }
+        }
+        return false;
+    }
+
+    public static int pointsForXPair(int pairLength){
+        //formula to calculate points from the pair length (pair2,3,4) ----> length * (length - 1) = points;
+        // pair2 = 2*1 = 2pts
+        // pair3 = 3*2 = 6pts
+        // pair4 = 4*3 = 12pts
+        return (pairLength * (pairLength-1));
+    }
+    public static String typeForXPair(int pairLength){
+        return (TYPE+pairLength);
+        //pair2, pair3, pair4
+    }
+
+    //this one is for use during the show
+    public boolean checkPairX(Hand hand, int pairLength){
+        //pair length can be 2-4 i.e. pair, triple, quadruple
+        Hand[] arrPair;
+        switch (pairLength){
+            case 4:
+                arrPair = hand.extractQuads();
+                break;
+            case 3:
+                arrPair = hand.extractTrips();
+                break;
+            default: //default is pairs i.e. pairLength = 2
+                arrPair = hand.extractPairs();
+        }
+        if (arrPair.length != 0){ //if at least one X-card pair was found
+            scoringCardsTemp.addAll(Arrays.asList(arrPair));
+            return true;
         }
         return false;
     }

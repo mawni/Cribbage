@@ -1,4 +1,5 @@
 package cribbage;
+import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 
 import java.io.IOException;
@@ -23,17 +24,21 @@ public class ScoreController {
     */
 
     //eventually strategy pattern vibes might be useful for changing of 'choice' / strategy
-    public void run(Hand hand, int playerNum, String choice) throws IOException {
+    public void run(Hand hand, int playerNum, String choice, Card starterCard) throws IOException {
         switch (choice) {
             case strategyStart: // the start of a round
+                //if strategy is for start of game, the method parameter 'hand' be null. Only starterCard is needed
+                //todo ensure when run() is called for start(), that hand passed in (in Cribbage) is null
+                hand = Cribbage.getInstance().makeHand();
+                hand.insert(starterCard, false);
                 start(playerNum, hand);
                 break;
                 //playerNum is needed to eventually log the scores scored
             case strategyPlay: // the actual play of a round
-                play(playerNum, hand);
+                play(playerNum, hand, starterCard);
                 break;
             case strategyShow: //the show i.e. the end of a round
-                show(playerNum, hand);
+                show(playerNum, hand, starterCard);
                 break;
             default: //something not working
                 System.out.println("Error! Invalid score strategy choice");
@@ -59,7 +64,7 @@ public class ScoreController {
     }
 
     // the actual play of a round
-    public void play(int playerNum, Hand hand) throws IOException {
+    public void play(int playerNum, Hand hand, Card starterCard) throws IOException {
         //relevant rules here: RunsRule and PairsRule. Hand passed in will be the segment of cards currently on board
 
         //factory to instantiate all relevant rules for the round
@@ -86,7 +91,7 @@ public class ScoreController {
     }
 
     //the show i.e. the end of a round
-    public void show(int playerNum, Hand hand) throws IOException {
+    public void show(int playerNum, Hand hand, Card starterCard) throws IOException {
         //factory to instantiate all relevant rules for the show
         ScoreRule fifteensRule = RuleFactory.getInstance().getRule(FifteensRule.TYPE);
         ScoreRule runsRule = RuleFactory.getInstance().getRule(RunsRule.TYPE);
@@ -108,29 +113,23 @@ public class ScoreController {
             }
         }
         if (runsRule.checkRule(hand, strategyShow)){
-            //there can be mulitple run rule scorings found of different type run3,run4,run5
-            //todo checkRule() here should somewhere create an array list of scoring cards sets
-            ArrayList<Hand> scoringRuns = runsRule.getCards();
-            for (Hand item : scoringRuns){
-                //update score
-                Cribbage.getInstance().addScorePoints(playerNum, runsRule.getPoints(item.getNumberOfCards()));
-                //pass in number of cards to get the specific number of points for run3,run4,run5
-                //do the log
-                Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), runsRule.getPoints(item.getNumberOfCards()), runsRule.getType(item.getNumberOfCards()), item);
-                //pass in number of cards to get the specific number of points for run3,run4,run5
-            }
+            //there can only ever be one run: either run3,4,5 because a hand (inc. starter card) only has 5 cards
+            //update score in cribbage
+            Cribbage.getInstance().addScorePoints(playerNum, runsRule.getPoints());
+            //do the log
+            Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), runsRule.getPoints(), runsRule.getType(), runsRule.getCards());
         }
         if (pairsRule.checkRule(hand, strategyShow)){
-            //there can be mulitple pair rule scorings found
-            //todo checkRule() here should somewhere create an array list of scoring cards sets
-            ArrayList<Hand> scoringpairs = pairsRule.getCards();
+            //there can be multiple pair rule scorings found in a hand
+            ArrayList<Hand> scoringPairs = pairsRule.getList();
             for (Hand item : scoringPairs){
+                int numOfCards = item.getNumberOfCards();
                 //update score
-                Cribbage.getInstance().addScorePoints(playerNum, pairsRule.getPoints(item.getNumberOfCards()));
-                //pass in number of cards to get the specific number of points for run3,run4,run5
+                Cribbage.getInstance().addScorePoints(playerNum, PairsRule.pointsForXPair(numOfCards));
+                //pass in number of cards to get the specific number of points for pair3,pair4,pair5
                 //do the log
-                Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), pairsRule.getPoints(item.getNumberOfCards()), pairsRule.getType(item.getNumberOfCards()), item);
-                //pass in number of cards to get the specific number of points for run3,run4,run5
+                Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), PairsRule.pointsForXPair(numOfCards), PairsRule.typeForXPair(numOfCards), item);
+                //pass in number of cards to get the specific number of points and type for pair2,pair3,pair4
             }
         }
         if (flushRule.checkRule(hand)){

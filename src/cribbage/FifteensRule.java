@@ -15,8 +15,6 @@ public class FifteensRule extends ScoreRule {
         setType(TYPE);
     }
 
-
-
     //checks if there are cards that equate to 15
     @Override
     public boolean checkRule(Hand hand) {

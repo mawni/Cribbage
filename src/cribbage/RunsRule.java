@@ -15,7 +15,6 @@ public class RunsRule extends ScoreRule {
         setType(TYPE);
     }
 
-    // method to check what kind of run potentially eg getRun()
     // this method would return run type: run3, run4, run5, run6, run7
     // then use this to assign score in getScore()
 
@@ -45,6 +44,8 @@ public class RunsRule extends ScoreRule {
 
     // for the Play: run of 3 to 7
     public boolean checkRulePlay(Hand hand) {
+        //note that inherently only one run can be scored on any given move
+        //this would be the maximum run. hence why if-else chain starts from run7
         Card lastPlayed = hand.getLast();
 
         if (checkRunX(hand, 7, lastPlayed)){
@@ -57,7 +58,7 @@ public class RunsRule extends ScoreRule {
             //if run 5 found
             return true;
         } else if (checkRunX(hand, 4, lastPlayed)){
-            //if run 4 found 
+            //if run 4 found
             return true;
         } else {
             return checkRunX(hand, 3, lastPlayed);
@@ -68,13 +69,22 @@ public class RunsRule extends ScoreRule {
 
     // for the Show: run of 3 to 5, incl starter card
     public boolean checkRuleShow(Hand starterHand) {
-        // create sorted arraylist of cards based on card value (cardValue() method?)
-        // check order - maybe use sequence() method from Hand class
-        // if there is a broken sequence, no points given
-        // check what kind of run it is, score is based on run length
-        // create new method to check the kind of run?
-        // return true if there is a sequence
-        //todo implement this
+        //hand size is 5 (including starter card), so it's only possible to score one run
+        //if you had a run of 3, you can't have a second unique run.
+        //if you did have another run, it would just make the original 3 one longer.
+        //so we will search from the highest run and move down
+
+        if (checkRunX(starterHand, 5)){
+            //run5 found
+            return true;
+        } else if (checkRunX(starterHand, 4)) {
+            //run4 found
+            return true;
+        } else {
+            return checkRunX(starterHand, 3);
+            //if run3 found, it'll return true, all processing done.
+            //if run3 not found, it'll return false
+        }
     }
 
     //this takes in an array of hands, and checks if any item in the array contains a card
@@ -101,6 +111,27 @@ public class RunsRule extends ScoreRule {
                 setType(TYPE+runLength);
                 return true;
             }
+        }
+        return false;
+    }
+
+    //this method is used to check run3,4,5 during the show.
+    public boolean checkRunX(Hand hand, int runLength){
+        Hand[] arrRun = hand.extractSequences(runLength);
+        if (arrRun.length != 0){ //if an X-card run was found
+            setCards(arrRun[0]);
+            /* Should the extractSequences() method find two runs of 3 for example,
+               since a hand (inc. starter card) is only 5 cards, the two run3's found
+               would have overlap. This means it would constitute a run4 or run5.
+               The checkRuleShow() method is written such that longer runs are caught
+               first, so this issue is solved.
+               TLDR: theoretically, this method will never be called where arrRun.length>1
+                     because the larger runs are always caught first, preventing smaller
+                     checkRunXShow()'s being executed
+            */
+            setPoints(runLength);
+            setType(TYPE+runLength);
+            return true;
         }
         return false;
     }
