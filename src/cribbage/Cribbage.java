@@ -132,6 +132,7 @@ public class Cribbage extends CardGame {
   private final Hand[] hands = new Hand[nPlayers];
   private Hand starter;
   private Hand crib;
+  private int currentDealer;
 
   public static void setStatus(String string) { cribbage.setStatusText(string); }
 
@@ -228,6 +229,15 @@ private void starter(Hand pack) {
 	Card dealt = randomCard(pack);
 	dealt.setVerso(false);
 	transfer(dealt, starter);
+//	Hand hand, int playerNum, String choice, Card starterCard
+	try {
+		Log.getInstance().starterCard(dealt); //log the starter card that was played
+		ScoreController.run(null, currentDealer, ScoreController.strategyStart, dealt);
+			//pass stuff into controller which will check if it starter card was a jack. If yes, it would log that
+	} catch (IOException e) {
+		System.out.println("Log for starter rule failed");
+		e.printStackTrace();
+	}
 }
 
 public static int total(Hand hand) {
@@ -257,6 +267,7 @@ private void play() {
 	final int fifteen = 15;
 	List<Hand> segments = new ArrayList<>();
 	int currentPlayer = 0; // Player 1 is dealer
+	currentDealer = 1;
 	Segment s = new Segment();
 	s.reset(segments);
 	while (!(players[0].emptyHand() && players[1].emptyHand())) {

@@ -37,7 +37,7 @@ public class ScoreController {
     }
 
     // the start of a round
-    public static void start(int playerNum, Hand hand) throws IOException {
+    private static void start(int playerNum, Hand hand) throws IOException {
         //only relevant rule here is the StarterRule (i.e. if Jack is dealt as starter card)
         //when ScoreController.run() called in Cribbage, only the starter card will be passed (i.e. hand will be 1 card)
 
@@ -54,7 +54,7 @@ public class ScoreController {
     }
 
     // the actual play of a round
-    public static void play(int playerNum, Hand hand) throws IOException {
+    private static void play(int playerNum, Hand hand) throws IOException {
         //relevant rules here: RunsRule and PairsRule. Hand passed in will be the segment of cards currently on board
 
         //factory to instantiate all relevant rules for the round
@@ -81,7 +81,7 @@ public class ScoreController {
     }
 
     //the show i.e. the end of a round
-    public static void show(int playerNum, Hand hand, Card starterCard) throws IOException {
+    private static void show(int playerNum, Hand hand, Card starterCard) throws IOException {
         //factory to instantiate all relevant rules for the show
         ScoreRule fifteensRule = RuleFactory.getInstance().getRule(FifteensRule.TYPE);
         ScoreRule runsRule = RuleFactory.getInstance().getRule(RunsRule.TYPE);
