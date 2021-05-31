@@ -155,6 +155,16 @@ private void updateScore(int player) {
 	addActor(scoreActors[player], scoreLocations[player]);
 }
 
+//function to get the current total score for a player
+public int getScore(int playerNum){
+	return scores[playerNum];
+}
+//function to update the player score
+public void addScorePoints(int playerNum, int newPoints){
+	scores[playerNum]+=newPoints;
+	updateScore(playerNum); //update the score visualiser on screen
+}
+
 private void deal(Hand pack, Hand[] hands) {
 	for (int i = 0; i < nPlayers; i++) {
 		hands[i] = new Hand(deck);
@@ -179,6 +189,9 @@ private void deal(Hand pack, Hand[] hands) {
 	}
 	layouts[0].setStepDelay(0);
 }
+
+//function to create a new empty hand
+public Hand makeHand(){return new Hand(deck);}
 
 private void discardToCrib() {
 	crib = new Hand(deck);
@@ -206,7 +219,7 @@ private void starter(Hand pack) {
 	transfer(dealt, starter);
 }
 
-int total(Hand hand) {
+public static int total(Hand hand) {
 	int total = 0;
 	for (Card c: hand.getCardList()) total += cardValue(c);
 	return total;
