@@ -200,11 +200,22 @@ private void discardToCrib() {
 	crib.setView(this, layout);
 	// crib.setTargetArea(cribTarget);
 	crib.draw();
+	int playerCtr = 0;
 	for (IPlayer player: players) {
+		Hand bothDiscards = new Hand(deck); //this exclusively serves purpose of passing to the Log class
 		for (int i = 0; i < nDiscards; i++) {
-			transfer(player.discard(), crib);
+			transfer(player.discard(), crib); //problem is here
+			bothDiscards.insert(crib.getLast(), false);
+		}
+		bothDiscards.sort(Hand.SortType.POINTPRIORITY, false);
+		try {
+			Log.getInstance().discarded(playerCtr, bothDiscards);
+		} catch (IOException e) {
+			System.out.println("Discard log failed");
+			e.printStackTrace();
 		}
 		crib.sort(Hand.SortType.POINTPRIORITY, true);
+		playerCtr++;
 	}
 }
 
