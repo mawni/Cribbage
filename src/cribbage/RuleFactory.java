@@ -30,16 +30,12 @@ public class RuleFactory {
 			return new FlushRule();
 		} else if (ruleType.equalsIgnoreCase("jack")) {
 			return new JackRule();
-		} else if (ruleType.equalsIgnoreCase("lastcard")) {
-			return new LastCardRule();
 		} else if (ruleType.equalsIgnoreCase("pair")) {
 			return new PairsRule();
 		} else if (ruleType.equalsIgnoreCase("run")) {
 			return new RunsRule();
 		} else if (ruleType.equalsIgnoreCase("starter")) {
 			return new StarterRule();
-		} else if (ruleType.equalsIgnoreCase("total")){
-			return new TotalRules();
 		} else {
 			System.out.println("Invalid ruleType provided");
 			return null;
