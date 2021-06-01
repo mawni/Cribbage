@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 
 public class Cribbage extends CardGame {
 	static Cribbage cribbage;  // Provide access to singleton
-
 	public static Cribbage getInstance(){
 		return cribbage;
 	}
@@ -132,7 +131,6 @@ public class Cribbage extends CardGame {
   private final Hand[] hands = new Hand[nPlayers];
   private Hand starter;
   private Hand crib;
-  private int currentDealer;
 
   public static void setStatus(String string) { cribbage.setStatusText(string); }
 
@@ -156,6 +154,14 @@ private void updateScore(int player) {
 	addActor(scoreActors[player], scoreLocations[player]);
 }
 
+//#####################################
+//SOME NEW FUNCTIONS + ATTRIBUTES BELOW
+
+private int currentDealer;
+private Card starterCard;
+private final Hand[] handsCopy = new Hand[nPlayers];
+//during play, cards are removed by player hands, hence this copy is required for use in the show
+
 //function to get the current total score for a player
 public int getScore(int playerNum){
 	return scores[playerNum];
@@ -165,6 +171,20 @@ public void addScorePoints(int playerNum, int newPoints){
 	scores[playerNum]+=newPoints;
 	updateScore(playerNum); //update the score visualiser on screen
 }
+//function to create a new empty hand
+public Hand makeHand(){return new Hand(deck);}
+//function to clone a hand i.e. copy card values but have a new object reference (new object)
+public Hand cloneHand(Hand originalHand){
+	Hand clone = new Hand(deck);
+	for (Card card : originalHand.getCardList()){
+		clone.insert(card.clone(), false);
+		//insert clone of card, don't draw on-screen
+	}
+	return clone;
+}
+
+//END OF NEW FUNCTIONS + ATTRIBUTES
+//#################################
 
 private void deal(Hand pack, Hand[] hands) {
 	for (int i = 0; i < nPlayers; i++) {
@@ -190,9 +210,6 @@ private void deal(Hand pack, Hand[] hands) {
 	}
 	layouts[0].setStepDelay(0);
 }
-
-//function to create a new empty hand
-public Hand makeHand(){return new Hand(deck);}
 
 private void discardToCrib() {
 	crib = new Hand(deck);
@@ -229,9 +246,10 @@ private void starter(Hand pack) {
 	Card dealt = randomCard(pack);
 	dealt.setVerso(false);
 	transfer(dealt, starter);
+	starterCard = dealt; //store the starter card so it can be eventually used for the show() methods
 	try {
-		Log.getInstance().starterCard(dealt); //log the starter card that was played
-		ScoreController.run(null, currentDealer, ScoreController.strategyStart, dealt);
+		Log.getInstance().starterCard(starterCard); //log the starter card that was played
+		ScoreController.run(null, currentDealer, ScoreController.strategyStart, starterCard);
 			//pass stuff into controller which will check if it starter card was a jack. If yes, it would log that
 	} catch (IOException e) {
 		System.out.println("Log for starter rule failed");
@@ -363,10 +381,18 @@ private void play() {
 	}
 }
 
-void showHandsCrib() {
+void showHandsCrib() throws IOException {
+	//Hand hand, int playerNum, String choice, Card starterCard
 	// score player 0 (non dealer)
+	Log.getInstance().cardsShown(0, starterCard, handsCopy[0]);
+	ScoreController.run(handsCopy[0], 0, ScoreController.strategyShow, starterCard);
 	// score player 1 (dealer)
+	Log.getInstance().cardsShown(1, starterCard, handsCopy[1]);
+	ScoreController.run(handsCopy[1], 1, ScoreController.strategyShow, starterCard);
 	// score crib (for dealer)
+	Log.getInstance().cardsShown(currentDealer, starterCard, crib);
+	ScoreController.run(crib, currentDealer, ScoreController.strategyShow, starterCard);
+		//note since this is a single-round program, currentDealer always = 1
 }
 
   public Cribbage()
@@ -394,11 +420,20 @@ void showHandsCrib() {
 	  	  e.printStackTrace();
 	  }
 	  discardToCrib();
+
+	  handsCopy[0] = cloneHand(hands[0]);
+	  handsCopy[1] = cloneHand(hands[1]);
+
 	  starter(pack);
 	  play();
-	  showHandsCrib();
+	  try {
+		  showHandsCrib();
+	  } catch (IOException e) {
+	  	  System.out.println("The show process including scoring and logging has failed");
+		  e.printStackTrace();
+	  }
 
-    addActor(new Actor("sprites/gameover.gif"), textLocation);
+	  addActor(new Actor("sprites/gameover.gif"), textLocation);
     setStatusText("Game over.");
     refresh();
   }
