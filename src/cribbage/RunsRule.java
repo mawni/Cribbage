@@ -2,12 +2,7 @@ package cribbage;
 
 import ch.aplu.jcardgame.*;
 
-import java.util.Arrays;
-
 public class RunsRule extends ScoreRule {
-    //todo: implement runs scoring
-    // note different logic during show and play
-    // the Show: can be run of 3, 4, 5, and include starter card
 
     public static final String TYPE = "run";
 

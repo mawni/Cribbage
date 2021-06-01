@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 
 public class Cribbage extends CardGame {
 	static Cribbage cribbage;  // Provide access to singleton
-
 	public static Cribbage getInstance(){
 		return cribbage;
 	}
@@ -155,6 +154,14 @@ private void updateScore(int player) {
 	addActor(scoreActors[player], scoreLocations[player]);
 }
 
+//#####################################
+//SOME NEW FUNCTIONS + ATTRIBUTES BELOW
+
+private int currentDealer;
+private Card starterCard;
+private final Hand[] handsCopy = new Hand[nPlayers];
+//during play, cards are removed by player hands, hence this copy is required for use in the show
+
 //function to get the current total score for a player
 public int getScore(int playerNum){
 	return scores[playerNum];
@@ -164,6 +171,20 @@ public void addScorePoints(int playerNum, int newPoints){
 	scores[playerNum]+=newPoints;
 	updateScore(playerNum); //update the score visualiser on screen
 }
+//function to create a new empty hand
+public Hand makeHand(){return new Hand(deck);}
+//function to clone a hand i.e. copy card values but have a new object reference (new object)
+public Hand cloneHand(Hand originalHand){
+	Hand clone = new Hand(deck);
+	for (Card card : originalHand.getCardList()){
+		clone.insert(card.clone(), false);
+		//insert clone of card, don't draw on-screen
+	}
+	return clone;
+}
+
+//END OF NEW FUNCTIONS + ATTRIBUTES
+//#################################
 
 private void deal(Hand pack, Hand[] hands) {
 	for (int i = 0; i < nPlayers; i++) {
@@ -190,9 +211,6 @@ private void deal(Hand pack, Hand[] hands) {
 	layouts[0].setStepDelay(0);
 }
 
-//function to create a new empty hand
-public Hand makeHand(){return new Hand(deck);}
-
 private void discardToCrib() {
 	crib = new Hand(deck);
 	RowLayout layout = new RowLayout(cribLocation, cribWidth);
@@ -200,11 +218,22 @@ private void discardToCrib() {
 	crib.setView(this, layout);
 	// crib.setTargetArea(cribTarget);
 	crib.draw();
+	int playerCtr = 0;
 	for (IPlayer player: players) {
+		Hand bothDiscards = new Hand(deck); //this exclusively serves purpose of passing to the Log class
 		for (int i = 0; i < nDiscards; i++) {
-			transfer(player.discard(), crib);
+			transfer(player.discard(), crib); //problem is here
+			bothDiscards.insert(crib.getLast(), false);
+		}
+		bothDiscards.sort(Hand.SortType.POINTPRIORITY, false);
+		try {
+			Log.getInstance().discarded(playerCtr, bothDiscards);
+		} catch (IOException e) {
+			System.out.println("Discard log failed");
+			e.printStackTrace();
 		}
 		crib.sort(Hand.SortType.POINTPRIORITY, true);
+		playerCtr++;
 	}
 }
 
@@ -217,6 +246,15 @@ private void starter(Hand pack) {
 	Card dealt = randomCard(pack);
 	dealt.setVerso(false);
 	transfer(dealt, starter);
+	starterCard = dealt; //store the starter card so it can be eventually used for the show() methods
+	try {
+		Log.getInstance().starterCard(starterCard); //log the starter card that was played
+		ScoreController.run(null, currentDealer, ScoreController.strategyStart, starterCard);
+			//pass stuff into controller which will check if it starter card was a jack. If yes, it would log that
+	} catch (IOException e) {
+		System.out.println("Log for starter rule failed");
+		e.printStackTrace();
+	}
 }
 
 public static int total(Hand hand) {
@@ -246,20 +284,25 @@ private void play() {
 	final int fifteen = 15;
 	List<Hand> segments = new ArrayList<>();
 	int currentPlayer = 0; // Player 1 is dealer
+	currentDealer = 1;
+	int turnCtr = 0;
+	int mostRecentGo = -1;
 	Segment s = new Segment();
 	s.reset(segments);
 	while (!(players[0].emptyHand() && players[1].emptyHand())) {
 		// System.out.println("segments.size() = " + segments.size());
+//		System.out.println("P" + currentPlayer + " hand = " + canonical(players[currentPlayer].hand));
 		Card nextCard = players[currentPlayer].lay(thirtyone-total(s.segment));
+		turnCtr++;
+//		System.out.println(nextCard);
 		if (nextCard == null) {
 			if (s.go) {
 				// Another "go" after previous one with no intervening cards
 				// lastPlayer gets 1 point for a "go"
 				scores[s.lastPlayer]+=1;
-				//todo use of '1' here should be replaced with a call of LastRule.java's final int.
 				try {
+					mostRecentGo = turnCtr;
 					Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 1, "go");
-					//todo use of '1' and "go" should be replaced with a call of LastRule.java's final int and string
 				} catch (IOException e) {
 					e.printStackTrace();
 					System.out.println("'Go' score logging failed");
@@ -269,18 +312,25 @@ private void play() {
 			} else {
 				// currentPlayer says "go"
 				s.go = true;
+//				System.out.println("current player says go");
 			}
 			currentPlayer = (currentPlayer+1) % 2;
 		} else {
 			s.lastPlayer = currentPlayer; // last Player to play a card in this segment
 			transfer(nextCard, s.segment);
+//			System.out.println("new P" + currentPlayer + " hand = " + canonical(players[currentPlayer].hand));
+			try {
+				Log.getInstance().played(currentPlayer, total(s.segment), nextCard);
+				ScoreController.run(s.segment, currentPlayer, ScoreController.strategyPlay, null);
+			} catch (IOException e) {
+				System.out.println("Log for played card failed");
+				e.printStackTrace();
+			}
 			if (total(s.segment) == thirtyone) {
 				// lastPlayer gets 2 points for a 31
 				scores[s.lastPlayer]+=2;
-				//todo use of '2' here should be replaced with a call of a final int from a ScoreRule.java subclass.
 				try {
 					Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 2, "thirtyone");
-					//todo use of '2' and "thirtyone" should be replaced with a call of final int and string from a ScoreRule.java subclass
 				} catch (IOException e) {
 					e.printStackTrace();
 					System.out.println("'Thirty One' score logging failed");
@@ -292,18 +342,15 @@ private void play() {
 				// if total(segment) == 15, lastPlayer gets 2 points for a 15
 				if (total(s.segment) == fifteen) {
 					scores[s.lastPlayer]+=2;
-					//todo use of '2' here should be replaced with a call of a final int from a ScoreRule.java subclass.
 					try {
 						Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 2, "fifteen");
-						//todo use of '2' and "fifteen" should be replaced with a call of final int and string from a ScoreRule.java subclass
 					} catch (IOException e) {
 						e.printStackTrace();
 						System.out.println("'Fifteen' score logging failed");
 					}
 					updateScore(s.lastPlayer); //update score display on screen
 				}
-
-				if (!s.go) { // if it is "go" then same player gets another turn
+				if (!s.go) { // if it is "go" then same player gets another turn i.e. skip this 'if' statement
 					currentPlayer = (currentPlayer+1) % 2;
 				}
 			}
@@ -313,12 +360,32 @@ private void play() {
 			s.reset(segments);
 		}
 	}
+
+	if (mostRecentGo != turnCtr){ //sanity check that there's no double up of 'go' scoring
+		//last card played always gets a 'go' point
+		try {
+			scores[s.lastPlayer]+=1;
+			Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 1, "go");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("'Go' score logging failed");
+		}
+		updateScore(s.lastPlayer); //update score display on screen
+	}
 }
 
-void showHandsCrib() {
+void showHandsCrib() throws IOException {
+	//Hand hand, int playerNum, String choice, Card starterCard
 	// score player 0 (non dealer)
+	Log.getInstance().cardsShown(0, starterCard, handsCopy[0]);
+	ScoreController.run(handsCopy[0], 0, ScoreController.strategyShow, starterCard);
 	// score player 1 (dealer)
+	Log.getInstance().cardsShown(1, starterCard, handsCopy[1]);
+	ScoreController.run(handsCopy[1], 1, ScoreController.strategyShow, starterCard);
 	// score crib (for dealer)
+	Log.getInstance().cardsShown(currentDealer, starterCard, crib);
+	ScoreController.run(crib, currentDealer, ScoreController.strategyShow, starterCard);
+		//note since this is a single-round program, currentDealer always = 1
 }
 
   public Cribbage()
@@ -339,12 +406,27 @@ void showHandsCrib() {
 
 	  /* Play the round */
 	  deal(pack, hands);
+	  try {
+		  Log.getInstance().dealtHand(hands[0], hands[1]);
+	  } catch (IOException e) {
+	  	  System.out.println("Logging for dealing failed");
+	  	  e.printStackTrace();
+	  }
 	  discardToCrib();
+
+	  handsCopy[0] = cloneHand(hands[0]);
+	  handsCopy[1] = cloneHand(hands[1]);
+
 	  starter(pack);
 	  play();
-	  showHandsCrib();
+	  try {
+		  showHandsCrib();
+	  } catch (IOException e) {
+	  	  System.out.println("The show process including scoring and logging has failed");
+		  e.printStackTrace();
+	  }
 
-    addActor(new Actor("sprites/gameover.gif"), textLocation);
+	  addActor(new Actor("sprites/gameover.gif"), textLocation);
     setStatusText("Game over.");
     refresh();
   }

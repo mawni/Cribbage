@@ -62,7 +62,13 @@ public class Log {
         bw.newLine();
         bw.write("discard,P" + playerNum + "," + Cribbage.getInstance().canonical(discards));
     }
-
+    
+    //called once per round. just prints the starter card
+    public void starterCard(Card starterCard) throws IOException{
+        bw.newLine();
+        bw.write("starter," + Cribbage.getInstance().canonical(starterCard));
+    }
+    
     /**
      * played() is called each time a player plays a card during the round
      * @param playerNum player 0 or player 1 i.e. P0 or P1
