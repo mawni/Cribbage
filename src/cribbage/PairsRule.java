@@ -5,12 +5,6 @@ import ch.aplu.jcardgame.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-//todo: implement pairs rule
-// can have pair2, pair3, pair4
-// note that pair logic is different for show vs play
-// the Play: pairs must be sequential
-// the Show: pairs don't have to be sequential and includes starter card
-
 public class PairsRule extends ScoreRule {
     public static final String TYPE = "pair";
     private ArrayList<Hand> scoringCardsTemp = new ArrayList<Hand>();

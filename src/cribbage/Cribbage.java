@@ -300,11 +300,9 @@ private void play() {
 				// Another "go" after previous one with no intervening cards
 				// lastPlayer gets 1 point for a "go"
 				scores[s.lastPlayer]+=1;
-				//todo use of '1' here should be replaced with a call of LastRule.java's final int.
 				try {
 					mostRecentGo = turnCtr;
 					Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 1, "go");
-					//todo use of '1' and "go" should be replaced with a call of LastRule.java's final int and string
 				} catch (IOException e) {
 					e.printStackTrace();
 					System.out.println("'Go' score logging failed");
@@ -331,10 +329,8 @@ private void play() {
 			if (total(s.segment) == thirtyone) {
 				// lastPlayer gets 2 points for a 31
 				scores[s.lastPlayer]+=2;
-				//todo use of '2' here should be replaced with a call of a final int from a ScoreRule.java subclass.
 				try {
 					Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 2, "thirtyone");
-					//todo use of '2' and "thirtyone" should be replaced with a call of final int and string from a ScoreRule.java subclass
 				} catch (IOException e) {
 					e.printStackTrace();
 					System.out.println("'Thirty One' score logging failed");
@@ -346,10 +342,8 @@ private void play() {
 				// if total(segment) == 15, lastPlayer gets 2 points for a 15
 				if (total(s.segment) == fifteen) {
 					scores[s.lastPlayer]+=2;
-					//todo use of '2' here should be replaced with a call of a final int from a ScoreRule.java subclass.
 					try {
 						Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 2, "fifteen");
-						//todo use of '2' and "fifteen" should be replaced with a call of final int and string from a ScoreRule.java subclass
 					} catch (IOException e) {
 						e.printStackTrace();
 						System.out.println("'Fifteen' score logging failed");
@@ -372,7 +366,6 @@ private void play() {
 		try {
 			scores[s.lastPlayer]+=1;
 			Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 1, "go");
-			//todo use of '1' and "go" should be replaced with a call of LastRule.java's final int and string
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("'Go' score logging failed");
