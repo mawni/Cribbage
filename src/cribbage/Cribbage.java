@@ -267,11 +267,16 @@ private void play() {
 	List<Hand> segments = new ArrayList<>();
 	int currentPlayer = 0; // Player 1 is dealer
 	currentDealer = 1;
+	int turnCtr = 0;
+	int mostRecentGo = -1;
 	Segment s = new Segment();
 	s.reset(segments);
 	while (!(players[0].emptyHand() && players[1].emptyHand())) {
 		// System.out.println("segments.size() = " + segments.size());
+//		System.out.println("P" + currentPlayer + " hand = " + canonical(players[currentPlayer].hand));
 		Card nextCard = players[currentPlayer].lay(thirtyone-total(s.segment));
+		turnCtr++;
+//		System.out.println(nextCard);
 		if (nextCard == null) {
 			if (s.go) {
 				// Another "go" after previous one with no intervening cards
@@ -279,6 +284,7 @@ private void play() {
 				scores[s.lastPlayer]+=1;
 				//todo use of '1' here should be replaced with a call of LastRule.java's final int.
 				try {
+					mostRecentGo = turnCtr;
 					Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 1, "go");
 					//todo use of '1' and "go" should be replaced with a call of LastRule.java's final int and string
 				} catch (IOException e) {
@@ -290,11 +296,13 @@ private void play() {
 			} else {
 				// currentPlayer says "go"
 				s.go = true;
+//				System.out.println("current player says go");
 			}
 			currentPlayer = (currentPlayer+1) % 2;
 		} else {
 			s.lastPlayer = currentPlayer; // last Player to play a card in this segment
 			transfer(nextCard, s.segment);
+//			System.out.println("new P" + currentPlayer + " hand = " + canonical(players[currentPlayer].hand));
 			try {
 				Log.getInstance().played(currentPlayer, total(s.segment), nextCard);
 				ScoreController.run(s.segment, currentPlayer, ScoreController.strategyPlay, null);
@@ -330,8 +338,7 @@ private void play() {
 					}
 					updateScore(s.lastPlayer); //update score display on screen
 				}
-
-				if (!s.go) { // if it is "go" then same player gets another turn
+				if (!s.go) { // if it is "go" then same player gets another turn i.e. skip this 'if' statement
 					currentPlayer = (currentPlayer+1) % 2;
 				}
 			}
@@ -340,6 +347,19 @@ private void play() {
 			segments.add(s.segment);
 			s.reset(segments);
 		}
+	}
+
+	if (mostRecentGo != turnCtr){ //sanity check that there's no double up of 'go' scoring
+		//last card played always gets a 'go' point
+		try {
+			scores[s.lastPlayer]+=1;
+			Log.getInstance().scored(s.lastPlayer, scores[s.lastPlayer], 1, "go");
+			//todo use of '1' and "go" should be replaced with a call of LastRule.java's final int and string
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("'Go' score logging failed");
+		}
+		updateScore(s.lastPlayer); //update score display on screen
 	}
 }
 
