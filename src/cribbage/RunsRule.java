@@ -23,10 +23,10 @@ public class RunsRule extends ScoreRule {
     public boolean checkRule(Hand hand, String playOrShow){
         boolean result;
         switch (playOrShow) {
-            case ScoreController.strategyPlay: // the play during a round
+            case ScoreController.STRATEGY_PLAY: // the play during a round
                 result = checkRulePlay(hand);
                 break;
-            case ScoreController.strategyShow: // the show at end of a round
+            case ScoreController.STRATEGY_SHOW: // the show at end of a round
                 result = checkRuleShow(hand);
                 break;
             default: //something not working

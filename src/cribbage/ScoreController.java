@@ -6,27 +6,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ScoreController {
-    public static final String strategyStart = "start";
-    public static final String strategyPlay = "play";
-    public static final String strategyShow = "show";
+    public static final String STRATEGY_START = "start";
+    public static final String STRATEGY_PLAY = "play";
+    public static final String STRATEGY_SHOW = "show";
 
     public ScoreController() {}
 
     //eventually strategy pattern vibes might be useful for changing of 'choice' / strategy
     public static void run(Hand hand, int playerNum, String choice, Card starterCard) throws IOException {
         switch (choice) {
-            case strategyStart: // the start of a round
+            case STRATEGY_START: // the start of a round
                 //if strategy is for start of game, the method parameter 'hand' be null. Only starterCard is needed
                 hand = Cribbage.getInstance().makeHand();
                 hand.insert(starterCard, false);
                 start(playerNum, hand);
                 break;
                 //playerNum is needed to eventually log the scores scored
-            case strategyPlay: // the actual play of a round
+            case STRATEGY_PLAY: // the actual play of a round
                 //if strategy is for play of game, the method parameter starterCard isn't necessary
                 play(playerNum, hand);
                 break;
-            case strategyShow: //the show i.e. the end of a round
+            case STRATEGY_SHOW: //the show i.e. the end of a round
                 show(playerNum, hand, starterCard);
                 break;
             default: //something not working
@@ -61,7 +61,7 @@ public class ScoreController {
         ScoreRule pairsRule = RuleFactory.getInstance().getRule(PairsRule.TYPE);
 
         //if the card just played on segment in round creates a 'run'
-        if (runsRule.checkRule(hand, strategyPlay)) {
+        if (runsRule.checkRule(hand, STRATEGY_PLAY)) {
             //note for any given move during the round, only one run can may ever be scored. this is different to during the show
             //update score in cribbage
             Cribbage.getInstance().addScorePoints(playerNum, runsRule.getPoints());
@@ -70,7 +70,7 @@ public class ScoreController {
         }
 
         //if the card just played on segment in round creates a pair
-        if (pairsRule.checkRule(hand, strategyPlay)) {
+        if (pairsRule.checkRule(hand, STRATEGY_PLAY)) {
             //note for any given move during the round, only one pair can may ever be scored based on recently played cards (in order)
             //update score in cribbage
             Cribbage.getInstance().addScorePoints(playerNum, pairsRule.getPoints());
@@ -108,14 +108,14 @@ public class ScoreController {
                 Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), fifteensRule.getPoints(), fifteensRule.getType(), item);
             }
         }
-        if (runsRule.checkRule(handWithStarter, strategyShow)){
+        if (runsRule.checkRule(handWithStarter, STRATEGY_SHOW)){
             //there can only ever be one run: either run3,4,5 because a hand (inc. starter card) only has 5 cards
             //update score in cribbage
             Cribbage.getInstance().addScorePoints(playerNum, runsRule.getPoints());
             //do the log
             Log.getInstance().handScored(playerNum, Cribbage.getInstance().getScore(playerNum), runsRule.getPoints(), runsRule.getType(), runsRule.getCards());
         }
-        if (pairsRule.checkRule(handWithStarter, strategyShow)){
+        if (pairsRule.checkRule(handWithStarter, STRATEGY_SHOW)){
             //there can be multiple pair rule scorings found in a hand
             ArrayList<Hand> scoringPairs = pairsRule.getList();
             for (Hand item : scoringPairs){

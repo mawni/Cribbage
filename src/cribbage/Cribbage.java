@@ -249,7 +249,7 @@ private void starter(Hand pack) {
 	starterCard = dealt; //store the starter card so it can be eventually used for the show() methods
 	try {
 		Log.getInstance().starterCard(starterCard); //log the starter card that was played
-		ScoreController.run(null, currentDealer, ScoreController.strategyStart, starterCard);
+		ScoreController.run(null, currentDealer, ScoreController.STRATEGY_START, starterCard);
 			//pass stuff into controller which will check if it starter card was a jack. If yes, it would log that
 	} catch (IOException e) {
 		System.out.println("Log for starter rule failed");
@@ -321,7 +321,7 @@ private void play() {
 //			System.out.println("new P" + currentPlayer + " hand = " + canonical(players[currentPlayer].hand));
 			try {
 				Log.getInstance().played(currentPlayer, total(s.segment), nextCard);
-				ScoreController.run(s.segment, currentPlayer, ScoreController.strategyPlay, null);
+				ScoreController.run(s.segment, currentPlayer, ScoreController.STRATEGY_PLAY, null);
 			} catch (IOException e) {
 				System.out.println("Log for played card failed");
 				e.printStackTrace();
@@ -378,13 +378,13 @@ void showHandsCrib() throws IOException {
 	//Hand hand, int playerNum, String choice, Card starterCard
 	// score player 0 (non dealer)
 	Log.getInstance().cardsShown(0, starterCard, handsCopy[0]);
-	ScoreController.run(handsCopy[0], 0, ScoreController.strategyShow, starterCard);
+	ScoreController.run(handsCopy[0], 0, ScoreController.STRATEGY_SHOW, starterCard);
 	// score player 1 (dealer)
 	Log.getInstance().cardsShown(1, starterCard, handsCopy[1]);
-	ScoreController.run(handsCopy[1], 1, ScoreController.strategyShow, starterCard);
+	ScoreController.run(handsCopy[1], 1, ScoreController.STRATEGY_SHOW, starterCard);
 	// score crib (for dealer)
 	Log.getInstance().cardsShown(currentDealer, starterCard, crib);
-	ScoreController.run(crib, currentDealer, ScoreController.strategyShow, starterCard);
+	ScoreController.run(crib, currentDealer, ScoreController.STRATEGY_SHOW, starterCard);
 		//note since this is a single-round program, currentDealer always = 1
 }
 
