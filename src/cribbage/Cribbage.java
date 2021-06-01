@@ -229,7 +229,6 @@ private void starter(Hand pack) {
 	Card dealt = randomCard(pack);
 	dealt.setVerso(false);
 	transfer(dealt, starter);
-//	Hand hand, int playerNum, String choice, Card starterCard
 	try {
 		Log.getInstance().starterCard(dealt); //log the starter card that was played
 		ScoreController.run(null, currentDealer, ScoreController.strategyStart, dealt);
@@ -298,6 +297,7 @@ private void play() {
 			transfer(nextCard, s.segment);
 			try {
 				Log.getInstance().played(currentPlayer, total(s.segment), nextCard);
+				ScoreController.run(s.segment, currentPlayer, ScoreController.strategyPlay, null);
 			} catch (IOException e) {
 				System.out.println("Log for played card failed");
 				e.printStackTrace();

@@ -17,7 +17,6 @@ public class ScoreController {
         switch (choice) {
             case strategyStart: // the start of a round
                 //if strategy is for start of game, the method parameter 'hand' be null. Only starterCard is needed
-                //todo ensure when run() is called for start(), that hand passed in (in Cribbage) is null
                 hand = Cribbage.getInstance().makeHand();
                 hand.insert(starterCard, false);
                 start(playerNum, hand);

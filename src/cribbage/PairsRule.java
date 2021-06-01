@@ -99,6 +99,7 @@ public class PairsRule extends ScoreRule {
         //returns -1 if nothing found
     }
 
+    //for use during play in the actual round
     public boolean checkPairX(Hand hand, int pairLength, Card lastPlayed){
         //pair length can be 2-4 i.e. pair, triple, quadruple
         Hand[] arrPair;
@@ -115,10 +116,23 @@ public class PairsRule extends ScoreRule {
         if (arrPair.length != 0){ //if at least one X-card pair was found
             int handWithCard = checkContainsCard(arrPair, lastPlayed);
             if (handWithCard != -1){
-                setPoints(pointsForXPair(pairLength)); //this determines the points based on the size of the pair
-                setCards(arrPair[handWithCard]);
-                setType(typeForXPair(pairLength));
-                return true;
+                if (hand.get(hand.getNumberOfCards()-2).getRank() == lastPlayed.getRank()){
+                    //this is a sanity check that the other pair card was played directly prior to lastPlayed
+
+                    //sanity check for when it's a possible triple
+                    if (pairLength>=3 && (hand.get(hand.getNumberOfCards()-3).getRank() != lastPlayed.getRank())){
+                        return false;
+                    }
+                    //sanity check for when it's a possible quadruple
+                    if (pairLength==4 && (hand.get(hand.getNumberOfCards()-4).getRank() != lastPlayed.getRank())){
+                        return false;
+                    }
+
+                    setPoints(pointsForXPair(pairLength)); //this determines the points based on the size of the pair
+                    setCards(arrPair[handWithCard]);
+                    setType(typeForXPair(pairLength));
+                    return true;
+                }
             }
         }
         return false;
