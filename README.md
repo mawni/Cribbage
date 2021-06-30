@@ -1,6 +1,6 @@
 # Cribbage
 
-A project to for a Java card game simulation.
+A project to work on a Java card game simulation.
 
 ## Description
 
